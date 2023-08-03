@@ -15,3 +15,10 @@
 
     1个主流:启动
     4个测流:页面 曝光 活动 错误
+
+
+    shell中查看java运行程序
+    jps -l
+
+
+    producer ods_log
