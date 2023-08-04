@@ -24,5 +24,12 @@ public class GmallConstant {
     public static final String TOPIC_DWD_TRAFFIC_ACTION = "dwd_traffic_action";
     public static final String TOPIC_DWD_TRAFFIC_DISPLAY = "dwd_traffic_display";
     public static final String TOPIC_DWD_TRAFFIC_PAGE = "dwd_traffic_page";
+    public static final String TOPIC_DWD_INTERACTION_COMMENT_INFO = "dwd_interaction_comment_info";
+    public static final String TOPIC_DWD_TRADE_CART_ADD = "dwd_trade_cart_add";
 
+    public static final String TOPIC_DWD_TRADE_ORDER_DETAIL = "dwd_trade_order_detail";
+
+    public static final String TOPIC_DWD_TRADE_CANCEL_DETAIL = "dwd_trade_cancel_detail";
+
+    public static final String TOPIC_DWD_TRADE_PAY_DETAIL_SUC = "dwd_trade_pay_detail_suc";
 }

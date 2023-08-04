@@ -18,19 +18,6 @@ import static org.apache.flink.streaming.api.environment.CheckpointConfig.Extern
  * @Note:
  */
 public abstract class BaseSQLApp {
-    public static void readOdsDb(StreamTableEnvironment tEnv, String groupId) {
-        tEnv.executeSql("create table ods_db (" +
-                "`database` string," +
-                "`table` string," +
-                "`type` string," +
-                "`data` map<string, string>," +
-                "`old` map<string, string>," +
-                "`ts` bigint " +
-                ")"+ SQLUtil.getKafkaSourceSQL(groupId, GmallConstant.TOPIC_ODS_DB));
-    }
-
-    public void handel(StreamExecutionEnvironment env, StreamTableEnvironment tEnv) {
-    }
 
     public void start(int port, int p, String ckAndJobName) {
         System.setProperty("HADOOP_USER_NAME", "atguigu");
@@ -71,6 +58,52 @@ public abstract class BaseSQLApp {
         handel(env, tEnv);
 
     }
+
+    /**
+     *  读取kafka中数据
+     *  创建一个临时表ods_db
+     * @param tEnv 表环境
+     * @param groupId
+     */
+    public static void readOdsDb(StreamTableEnvironment tEnv, String groupId) {
+        tEnv.executeSql("create table ods_db (" +
+                "`database` string," +
+                "`table` string," +
+                "`type` string," +
+                "`data` map<string, string>," +
+                "`old` map<string, string>," +
+                "`ts` bigint," +
+                "`pt` as proctime()," +
+                "et as to_timestamp_ltz(ts, 0),"+
+                "watermark for et as et - interval '3' second" +
+                ")"+ SQLUtil.getKafkaSourceSQL(groupId, GmallConstant.TOPIC_ODS_DB));
+    }
+
+    /**
+     * flink sql中的 hbase sql
+     * 根据table对象 创建一个hbase临时表 用于数据存储
+     * @param tEnv  表对象
+     */
+    protected static void readBaseDIC(StreamTableEnvironment tEnv) {
+        tEnv.executeSql("create table base_dic (" +
+                " dic_code string," +
+                " info row<dic_name string> " +
+                ") with (" +
+                " 'connector' = 'hbase-2.2'," +
+                " 'table-name' = 'gmall:dim_base_dic'," +
+                " 'lookup.cache' = 'PARTIAL'," +
+                " 'lookup.async' = 'true'," +
+                " 'lookup.partial-cache.expire-after-write' = '1 day'," +
+                // " 'lookup.partial-cache.expire-after-access' = '20 second'," + // ttl更新: 每访问一次这个值, 就跟新一下 ttl
+                " 'lookup.partial-cache.max-rows' = '10'," + // 缓存的最大行数
+                " 'zookeeper.quorum' = 'hadoop162,hadoop163,hadoop164:2181'" +
+                ")");
+    }
+
+    public void handel(StreamExecutionEnvironment env, StreamTableEnvironment tEnv) {
+    }
+
+
 
 
 }
