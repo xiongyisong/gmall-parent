@@ -45,4 +45,26 @@ public class SQLUtil {
                 ")";
 
     }
+
+    /**
+     * sql拼接 upsertkafka
+     * @param topic
+     * @param format
+     * @return
+     */
+    public static String getUpsertKafkaSQL(String topic, String ... format) {
+        String defaultFormat = "json";
+        if (format.length>0){
+            defaultFormat=format[0];
+        }
+        return "with(" +
+                "  'connector' = 'upsert-kafka'," +
+                "  'topic' = '" + topic + "'," +
+                "  'properties.bootstrap.servers' = '" + GmallConstant.KAFKA_BROKERS + "'," +
+                ("json".equals(defaultFormat) ? " 'key.json.ignore-parse-errors' = 'true', " : "") +
+                ("json".equals(defaultFormat) ? " 'value.json.ignore-parse-errors' = 'true', " : "") +
+                "  'key.format' = '" + defaultFormat + "', " +
+                "  'value.format' = '" + defaultFormat + "'" +
+                ")";
+    }
 }
