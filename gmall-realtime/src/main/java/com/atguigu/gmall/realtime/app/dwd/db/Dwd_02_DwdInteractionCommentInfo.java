@@ -50,7 +50,7 @@ public class Dwd_02_DwdInteractionCommentInfo extends BaseSQLApp {
         //tEnv.sqlQuery("select * from ods_db").execute().print();
 
         //3.读取字典表 （hbase 连接器）
-        readBaseDIC(tEnv);
+        readBaseDic(tEnv);
 
 
         //4.lookup join: 维度退化

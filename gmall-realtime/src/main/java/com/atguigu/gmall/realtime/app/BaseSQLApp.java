@@ -19,6 +19,11 @@ import static org.apache.flink.streaming.api.environment.CheckpointConfig.Extern
  */
 public abstract class BaseSQLApp {
 
+    public void handel(StreamExecutionEnvironment env, StreamTableEnvironment tEnv) {
+    }
+
+
+
     public void start(int port, int p, String ckAndJobName) {
         System.setProperty("HADOOP_USER_NAME", "atguigu");
         Configuration conf = new Configuration();
@@ -59,6 +64,9 @@ public abstract class BaseSQLApp {
 
     }
 
+
+
+
     /**
      *  读取kafka中数据
      *  创建一个临时表ods_db
@@ -84,7 +92,7 @@ public abstract class BaseSQLApp {
      * 根据table对象 创建一个hbase临时表 用于数据存储
      * @param tEnv  表对象
      */
-    protected static void readBaseDIC(StreamTableEnvironment tEnv) {
+    protected static void readBaseDic(StreamTableEnvironment tEnv) {
         tEnv.executeSql("create table base_dic (" +
                 " dic_code string," +
                 " info row<dic_name string> " +
@@ -98,9 +106,6 @@ public abstract class BaseSQLApp {
                 " 'lookup.partial-cache.max-rows' = '10'," + // 缓存的最大行数
                 " 'zookeeper.quorum' = 'hadoop162,hadoop163,hadoop164:2181'" +
                 ")");
-    }
-
-    public void handel(StreamExecutionEnvironment env, StreamTableEnvironment tEnv) {
     }
 
 
