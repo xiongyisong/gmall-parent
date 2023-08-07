@@ -180,7 +180,6 @@ public class DimApp extends BaseApp {
                             ct.collect(Tuple2.of(data, tableProcess));
                         }
 
-
                     }
 
 
