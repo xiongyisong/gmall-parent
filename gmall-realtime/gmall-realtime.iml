@@ -45,6 +45,7 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-shaded-jackson:2.13.4-16.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-json:1.17.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-shaded-force-shading:16.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-csv:1.17.1" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.2.83" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.hadoop:hadoop-client:3.3.4" level="project" />
     <orderEntry type="library" name="Maven: org.apache.hadoop:hadoop-common:3.3.4" level="project" />
