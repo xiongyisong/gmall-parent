@@ -235,6 +235,11 @@
             <version>${doris.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.janeluo</groupId>
+            <artifactId>ikanalyzer</artifactId>
+            <version>2012_u6</version>
+        </dependency>
 
     </dependencies>
 

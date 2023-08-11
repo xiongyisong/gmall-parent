@@ -67,4 +67,21 @@ public class SQLUtil {
                 "  'value.format' = '" + defaultFormat + "'" +
                 ")";
     }
+
+    public static String getDorisSink(String table) {
+
+        return "WITH (" +
+                "  'connector' = 'doris', " +
+                "  'fenodes' = 'hadoop162:7030', " +
+                "  'table.identifier' = '" + table + "', " +
+                "  'username' = 'root', " +
+                "  'password' = 'aaaaaa', " +
+                "  'sink.properties.format' = 'json', " +
+                "  'sink.buffer-count' = '4', " +
+                "  'sink.buffer-size' = '4086'," +
+                "  'sink.enable-2pc' = 'false', " + // 测试阶段可以关闭两阶段提交,方便测试
+                "  'sink.properties.read_json_by_line' = 'true' " +
+                ")  ";
+
+    }
 }

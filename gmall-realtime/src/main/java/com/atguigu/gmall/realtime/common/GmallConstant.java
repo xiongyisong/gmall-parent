@@ -15,9 +15,9 @@ public class GmallConstant {
     public static final String MYSQL_HOST = "hadoop162";
     public static final int MYSQL_PORT = 3306;
     public static final String CONFIG_DATABASE = "gmall2023_config";
+
     public static final String MYSQL_DRIVER = "com.mysql.cj.jdbc.Driver";
     public static final String MYSQL_URL = "jdbc:mysql://hadoop162:3306?useSSL=false";
-
 
     public static final String TOPIC_DWD_TRAFFIC_START = "dwd_traffic_start";
     public static final String TOPIC_DWD_TRAFFIC_ERR = "dwd_traffic_err";
@@ -36,4 +36,8 @@ public class GmallConstant {
     public static final String TOPIC_DWD_TRADE_ORDER_REFUND = "dwd_trade_order_refund";
 
     public static final String TOPIC_DWD_TRADE_REFUND_PAY_SUC = "dwd_trade_refund_pay_suc";
+
+    public static final long SEVEN_DAY_MS = 7 * 24 * 60 * 60 * 1000;
+
+    public static final String TOPIC_DWD_USER_REGISTER = "dwd_user_register";
 }
