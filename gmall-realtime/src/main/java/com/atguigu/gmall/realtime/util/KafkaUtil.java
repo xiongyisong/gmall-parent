@@ -33,6 +33,12 @@ public class KafkaUtil {
                 .build();
     }
 
+    /**
+     * 默认的 setTopicSelector
+     * 默认的  setValueSerializationSchema
+     * @param topic
+     * @return
+     */
     public static Sink<String> getKafkaSink(String topic) {
        return  KafkaSink.<String>builder()
                 .setBootstrapServers(GmallConstant.KAFKA_BROKERS)
@@ -48,6 +54,11 @@ public class KafkaUtil {
     }
 
 
+    /**
+     * 自定义的 setTopicSelector
+     * 自定义的  setValueSerializationSchema
+     * @return
+     */
 
     public static Sink<Tuple2<JSONObject, TableProcess>> getKafkaSink() {
         return KafkaSink.<Tuple2<JSONObject, TableProcess>>builder()
