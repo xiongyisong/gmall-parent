@@ -132,15 +132,15 @@ public class Dwd_09_BaseDb extends BaseApp {
                         TableProcess tp = state.get(key);
                         // 2. 如果状态中没有找到, 再去 Map 中查找
                         if (tp == null) {
-                       System.out.println("在状态中没有找到: " + key);
+                            // System.out.println("在状态中没有找到: " + key);
                             tp = map.get(key);
                             if (tp == null) {
-                           System.out.println("在map中也没有找到: " + key);
+                          // System.out.println("在map中也没有找到: " + key);
                             }else{
-                           System.out.println("在map中找到: " + key);
+                           //System.out.println("在map中找到: " + key);
                             }
                         }else{
-                       System.out.println("在状态中找到: " + key);
+                       //System.out.println("在状态中找到: " + key);
                         }
 
                         if (tp != null) { // 这条数据, 找到了配置信息

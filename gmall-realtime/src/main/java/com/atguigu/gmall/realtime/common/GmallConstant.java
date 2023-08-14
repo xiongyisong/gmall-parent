@@ -40,4 +40,5 @@ public class GmallConstant {
     public static final long SEVEN_DAY_MS = 7 * 24 * 60 * 60 * 1000;
 
     public static final String TOPIC_DWD_USER_REGISTER = "dwd_user_register";
+    public static final int TWO_DAY_SECONDS = 2 * 24 * 60 * 60;
 }
