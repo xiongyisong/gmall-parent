@@ -2,6 +2,7 @@ package com.atguigu.gmall.realtime.app;
 
 import com.atguigu.gmall.realtime.util.KafkaUtil;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.runtime.state.hashmap.HashMapStateBackend;
@@ -57,8 +58,9 @@ public abstract class BaseApp {
         // env.getCheckpointConfig().enableUnalignedCheckpoints();
 
         // env.getCheckpointConfig().setForceUnalignedCheckpoints(true);
-
-        KafkaSource<String> source = KafkaUtil.getKafkaSource(ckAndGroupIdAndJobName,topic);
+        // 10. job 失败的时候重启策略
+        env.setRestartStrategy(RestartStrategies.fixedDelayRestart(3,3000));
+        KafkaSource<String> source = KafkaUtil.getKafkaSource(ckAndGroupIdAndJobName, topic);
         DataStreamSource<String> stream = env.fromSource(source, WatermarkStrategy.noWatermarks(), "kafka-source");
 
 
