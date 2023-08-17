@@ -64,11 +64,11 @@ public class DimApp extends BaseApp {
         // 数据流和配置流进行 connect
 
         SingleOutputStreamOperator<Tuple2<JSONObject, TableProcess>> dimDataAndTpStream = connect(etledStream, tpStream);
-         dimDataAndTpStream.print();
+    //    dimDataAndTpStream.print();
 
         // 删除数据中不需要的列
         SingleOutputStreamOperator<Tuple2<JSONObject, TableProcess>> resultSream = delNotNeedColumns(dimDataAndTpStream);
-        resultSream.print();
+    //    resultSream.print();
 
         // 数据根据配置信息，写入到hbase对应的表中
         writeToHbase(resultSream);
