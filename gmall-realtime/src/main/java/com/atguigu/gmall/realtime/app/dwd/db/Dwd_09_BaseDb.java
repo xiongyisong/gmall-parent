@@ -167,6 +167,9 @@ public class Dwd_09_BaseDb extends BaseApp {
                         } else {
                             state.put(key, tp); // 如果不是删除,则更新或者添加
                         }
+
+
+
                     }
 
                     private String getKey(String table, String operateType) {
@@ -215,16 +218,16 @@ public class Dwd_09_BaseDb extends BaseApp {
                 .build();
 
         return env
-                .fromSource(mySqlSource, WatermarkStrategy.noWatermarks(), "m")
+                .fromSource(mySqlSource, WatermarkStrategy.noWatermarks(), "mysql-cdc-source")
                 .setParallelism(1)
                 .map(new MapFunction<String, TableProcess>() {
                     @Override
-                    public TableProcess map(String Value) throws Exception {
-                        JSONObject obj = JSON.parseObject(Value);
+                    public TableProcess map(String value) throws Exception {
+                        JSONObject obj = JSON.parseObject(value);
                         String op = obj.getString("op");
-                        TableProcess tp = null;
+                        TableProcess tp ;
                         if ("d".equals(op)) {
-                            obj.getObject("before", TableProcess.class);
+                           tp = obj.getObject("before", TableProcess.class);
                         } else {
                             tp = obj.getObject("after", TableProcess.class);
                         }
