@@ -4,15 +4,20 @@ import com.alibaba.fastjson.JSONObject;
 import com.atguigu.gmall.realtime.bean.TableProcess;
 import com.atguigu.gmall.realtime.function.HbaseSink;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.codehaus.jackson.map.util.BeanUtil;
 
 import java.io.IOException;
+import java.util.List;
 
 
 @Slf4j
@@ -26,14 +31,15 @@ public class HbaseUtil {
         Configuration conf = HBaseConfiguration.create();
         conf.set("hbase.zookeeper.quorum", "hadoop162");
         conf.set("hbase.zookeeper.property.clientPort", "2181");
-        conf.set("hbase.client.sync.wait.timeout.msec", "10000");
-
+        Connection conn = null;
         try {
-            return ConnectionFactory.createConnection(conf);
+            conn = ConnectionFactory.createConnection(conf);
+            System.out.println("conn = " + conn);
         } catch (IOException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
-
+        return conn;
     }
 
 
@@ -90,7 +96,10 @@ public class HbaseUtil {
      * @param family  列族
      */
 
-    public static void createHbaseTable(Connection hbaseConn, String nameSpace, String table, String family) {
+    public static void createHbaseTable(Connection hbaseConn,
+                                        String nameSpace,
+                                        String table,
+                                        String family) {
 
 
         TableName tableName = TableName.valueOf(nameSpace, table);
@@ -126,41 +135,16 @@ public class HbaseUtil {
     }
 
 
-    // public static void createHbaseTable(Connection hbaseConn,
-    //                                     String nameSpace,
-    //                                     String tableName,
-    //                                     String... families) {
-    //     if (families.length < 1) {
-    //         throw new IllegalArgumentException("请至少需要一个列族名...");
-    //     }
-    //
-    //     try (Admin admin = hbaseConn.getAdmin()) {
-    //         //判断表是否存在
-    //         if (admin.tableExists(TableName.valueOf(nameSpace, tableName))) {
-    //             System.out.println(nameSpace + ":" + tableName + "已存在");
-    //             return;
-    //         }
-    //         TableDescriptorBuilder builder = TableDescriptorBuilder.newBuilder(TableName.valueOf(nameSpace, tableName));
-    //         //指定列族
-    //         for (String family : families) {
-    //             ColumnFamilyDescriptor familyDescriptor = ColumnFamilyDescriptorBuilder
-    //                     .newBuilder(Bytes.toBytes(family)).build();
-    //             builder.setColumnFamily(familyDescriptor);
-    //         }
-    //         admin.createTable(builder.build());
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    // }
-
-
     /**
      *  根据传入条件 删除指定的表
+     *
      * @param hbaseConn hbase 连接对象
      * @param nameSpace  空间命名
      * @param table  表名
      */
-    public static void dropHbaseTable(Connection hbaseConn, String nameSpace, String table) {
+    public static void dropHbaseTable(Connection hbaseConn,
+                                      String nameSpace,
+                                      String table) {
         TableName tableName = TableName.valueOf(nameSpace, table);
         try (Admin admin = hbaseConn.getAdmin()) {
             if (admin.tableExists(tableName)) {
@@ -197,7 +181,13 @@ public class HbaseUtil {
      * @param columes      要写入的列
      * @param data         data列与对应的列值
      */
-    public static void putOneRow(Connection hbaseConn, String nameSpaceStr, String tableNameStr, String rowKey, String columeFamily, String[] columes, JSONObject data) {
+    public static void putOneRow(Connection hbaseConn,
+                                 String nameSpaceStr,
+                                 String tableNameStr,
+                                 String rowKey,
+                                 String columeFamily,
+                                 String[] columes,
+                                 JSONObject data) {
         // 获取一张表
         TableName tableName = TableName.valueOf(nameSpaceStr, tableNameStr);
         try (Table table = hbaseConn.getTable(tableName)) {
@@ -227,7 +217,10 @@ public class HbaseUtil {
      * @param tableNameStr  表名
      * @param rowKey  rowkey
      */
-    public static void deleteOneRow(Connection hbaseConn, String nameSpaceStr, String tableNameStr, String rowKey) {
+    public static void deleteOneRow(Connection hbaseConn,
+                                    String nameSpaceStr,
+                                    String tableNameStr,
+                                    String rowKey) {
 
 
         // 获取一张表
@@ -237,6 +230,33 @@ public class HbaseUtil {
             table.delete(delete);
         } catch (IOException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public static<T> T getOneRow(Connection hbaseConn,
+                                       String nameSpace,
+                                       String tableNameStr,
+                                       String rowKey,
+                                       Class<T> tClass) {
+        TableName tableName = TableName.valueOf(nameSpace, tableNameStr);
+
+        try (Table table = hbaseConn.getTable(tableName)){
+
+            Get get = new Get(Bytes.toBytes(rowKey));
+            Result result = table.get(get);
+
+            List<Cell> cells = result.listCells();
+            T t = tClass.newInstance();
+            for (Cell cell : cells) {
+                String k = Bytes.toString(CellUtil.cloneQualifier(cell));
+                String v = Bytes.toString(CellUtil.cloneValue(cell));
+                BeanUtils.setProperty(t,k,v);
+            }
+            return t;
+
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 

@@ -22,15 +22,40 @@ import java.util.Random;
 
 
 public class KafkaUtil {
-    public static KafkaSource<String> getKafkaSource(String groupId, String topic){
-
-        return  KafkaSource.<String>builder()
-                .setBootstrapServers(GmallConstant.KAFKA_BROKERS)
-                .setGroupId(groupId)
-                .setTopics(topic)
-                .setStartingOffsets(OffsetsInitializer.latest())
-                .setValueOnlyDeserializer(new SimpleStringSchema())
-                .build();
+    public static KafkaSource<String> getKafkaSource(String groupId, String topic) {
+        return KafkaSource.<String>builder()
+            .setBootstrapServers(GmallConstant.KAFKA_BROKERS)
+            .setGroupId(groupId)
+            .setTopics(topic)
+            .setStartingOffsets(OffsetsInitializer.latest()) // 没有状态或者状态的没有偏移量从最新的消费.如果是从状态恢复, 从状态中记录的位置开始消费
+            .setValueOnlyDeserializer(new DeserializationSchema<String>() {  // 自定义反序列化
+                
+                // 反序列化: 把字节数组转成字符串
+                @Override
+                public String deserialize(byte[] message) throws IOException {
+                    if (message != null) {
+                        return new String(message, StandardCharsets.UTF_8);
+                    }
+                    return null;  // 如果返回的是 null,则这条数据直接忽略
+                }
+                
+                // 是否结束流
+                // 无界流永远返回 false
+                @Override
+                public boolean isEndOfStream(String nextElement) {
+                    return false;
+                }
+                
+                // 返回得到流中数据的类型
+                @Override
+                public TypeInformation<String> getProducedType() {
+                    //                    return Types.STRING;  // 专用: 必须一些常见的内置类型
+                    //                    return TypeInformation.of(String.class);  // 普通的不带泛型的类型的写法
+                    return TypeInformation.of(new TypeHint<String>() {}); // 最通用: 适用于所有类型
+                }
+            })
+            .build();
+        
     }
 
     /**
